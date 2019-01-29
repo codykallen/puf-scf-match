@@ -17,4 +17,11 @@ that may complicate the statistical analysis. In particular, the SCF uses
 multiple imputation, such that each unit in the SCF has 5 observations. This
 matching version ignores this complication.
 
-To run this, first execute the code in `scf_prep.do`, and then run your preferred matching program.
+To run this, first execute the code in `scf_prep.do`, and then run your preferred matching program:
+ - `match0.py`: Matches using sorting by the comparable income measure
+ - `match1.py`: Matches using sorting by comparable income, nested within age groups
+
+Future versions:
+ - Matching by minimum distance on income and age
+ - Matching by subcomponents of income
+ - Consider other variables to match on
