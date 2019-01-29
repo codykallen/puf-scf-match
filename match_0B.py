@@ -13,7 +13,7 @@ In our case, the measure of interest is the comparable income measure:
     Social Security
     Pensions and annuities
 This version conducts the income matching nested within age groups. This adds
-an additional level of accuracy relative to match0.py.
+an additional level of accuracy relative to match0A.py.
 
 The output of this program is a file containing pairings of units from the PUF
 and from the SCF.
@@ -125,4 +125,4 @@ match_res4 = Match(PUF[PUF['age_group'] == 4], SCF[SCF['age_group'] == 4])
 match_res5 = Match(PUF[PUF['age_group'] == 5], SCF[SCF['age_group'] == 5])
 match_res = pd.concat([match_res0, match_res1, match_res2, match_res3,
                        match_res4, match_res5], axis=0)
-match_res.to_csv(os.path.join(CUR_PATH, 'match1_results.csv'), index=False)
+match_res.to_csv(os.path.join(CUR_PATH, 'match_0B_results.csv'), index=False)

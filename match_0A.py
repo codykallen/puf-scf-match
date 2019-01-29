@@ -92,6 +92,6 @@ def Match(puf, scf):
                            'wgt': wt_list})
     return match1
 
-# Call the Match and save the matchings
+# Call the Match function and save the matchings
 match_res = Match(PUF, SCF)
-match_res.to_csv(os.path.join(CUR_PATH, 'match0_results.csv'), index=False)
+match_res.to_csv(os.path.join(CUR_PATH, 'match_0A_results.csv'), index=False)
