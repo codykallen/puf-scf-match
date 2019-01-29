@@ -19,7 +19,7 @@ use "rscfp2016.dta", clear
 merge 1:1 Y1 using "compincome.dta"
 drop _merge
 
-keep Y1 compincome wgt
+keep Y1 compincome age wgt
 export delimited using "scf.csv", replace
 clear
 exit
