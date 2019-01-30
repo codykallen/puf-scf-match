@@ -32,7 +32,7 @@ SCF = pd.read_csv(os.path.join(CUR_PATH, 'scf.csv'))
 # Get the PUF data aged to 2015
 recs = Records('puf.csv')
 pol = Policy()
-calc = Calculator(policy=pol, records=recs)
+calc = Calculator(policy=pol, records=recs, verbose=False)
 calc.advance_to_year(2015)
 calc.calc_all()
 recvars = ['e00200', 'e02100', 'e00900', 'e02000', 'e00400', 'e00300',
@@ -61,7 +61,7 @@ def Match(puf, scf):
     scf_list = list()
     wt_list = list()
     j = 0
-    count = len(scf)
+    count = len(scf) - 1
     bwt = scf.loc[0, 'wgt2']
     epsilon = 0.001
     # Iterate over PUF observations
@@ -95,3 +95,8 @@ def Match(puf, scf):
 # Call the Match function and save the matchings
 match_res = Match(PUF, SCF)
 match_res.to_csv(os.path.join(CUR_PATH, 'match_0A_results.csv'), index=False)
+
+print('Matching complete')
+print('Length of PUF: ' + str(len(PUF)))
+print('Length of SCF: ' + str(len(SCF)))
+print('Length of Match: ' + str(len(match_res)))
