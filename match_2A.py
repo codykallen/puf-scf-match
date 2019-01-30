@@ -1,7 +1,10 @@
 """
-This file conducts a matching between the PUF and the SCF similar to that
-done is taxdata. In other words, we compute a particular measure and align the
-items.
+This file conducts a matching between the PUF and the SCF using minimum
+distance, with distance defined using the Euclidean norm. In the event of ties
+(which should be very common due to the multiple imputation in the SCF), we
+split the PUF record into several different records, with the weight split
+based on the relative weights among the SCF matches.
+
 In our case, the measure of interest is the comparable income measure:
     Wage/salary income
     Farm net income
@@ -12,16 +15,18 @@ In our case, the measure of interest is the comparable income measure:
     Unemployment Insurance
     Social Security
     Pensions and annuities
-This version is very simple and likely inappropriate. Other files will consider
-alternative approaches to matching, including minimum distance and matching
-within groups. 
 
 The output of this program is a file containing pairings of units from the PUF
 and from the SCF.
+
+This program is nearly identical to match_1A.py. The distinction is that in the
+case of n SCF observations matched to a PUF observation, this
+randomly selects one to match instead of producing n matches.
 """
 import os
 import numpy as np
 import pandas as pd
+import copy
 import taxcalc
 from taxcalc import *
 
@@ -50,43 +55,25 @@ def Match(puf, scf):
     results. It returns a dataset of pairings of PUF and SCF records and the
     weight accorded to each.
     """
-    # Ensure datasets have same total weight
-    wt_factor = sum(puf['s006']) / sum(scf['wgt'])
-    scf['wgt2'] = scf['wgt'] * wt_factor
-    # Sort by income
-    puf = puf.sort_values('compincome', kind='mergesort').reset_index()
-    scf = scf.sort_values('compincome', kind='mergesort').reset_index()
-    # Preparation for matching
+    incb = np.array(scf['compincome'])
     puf_list = list()
     scf_list = list()
     wt_list = list()
-    j = 0
-    count = len(scf) - 1
-    bwt = scf.loc[0, 'wgt2']
-    epsilon = 0.001
     # Iterate over PUF observations
     for i in range(len(puf)):
-        # Grab weight for PUF unit
-        awt = puf.loc[i, 's006']
-        # Run until PUF record weight used up
-        while awt > epsilon:
-            # Append the matched records
-            pufseq = puf.loc[i, 'RECID']
-            scfseq = scf.loc[j, 'Y1']
-            puf_list.append(pufseq)
-            scf_list.append(scfseq)
-            # Use lesser weight for matched record
-            cwt = min(awt, bwt)
-            wt_list.append(cwt)
-            # Update remaining weights for records
-            awt = max(0, awt - cwt)
-            bwt = max(0, bwt - cwt)
-            # If SCF weight used up
-            if bwt <= epsilon:
-                # If SCf records not all used up
-                if j < count:
-                    j += 1
-                    bwt = scf.loc[j, 'wgt2']
+        scf1 = copy.deepcopy(scf)
+        # Grab income for PUF unit
+        inca = puf.loc[i, 'compincome']
+        # Calculate distance
+        scf1['dist'] = np.abs(incb - inca)
+        # Grab matched observations
+        scf_matched = scf1[scf1['dist'] == min(scf1['dist'])]
+        # Randomly select 1 SCF match
+        scf_matched2 = scf_matched.sample(n=1, weights='wgt').reset_index()
+        # Save each matching
+        puf_list.append(puf.loc[i, 'RECID'])
+        scf_list.append(scf_matched2.loc[0, 'Y1'])
+        wt_list.append(puf.loc[i, 's006'])
     # Save results to a DataFrame
     match1 = pd.DataFrame({'pufseq': puf_list, 'scf_seq': scf_list,
                            'wgt': wt_list})
@@ -94,7 +81,7 @@ def Match(puf, scf):
 
 # Call the Match function and save the matchings
 match_res = Match(PUF, SCF).round(2)
-match_res.to_csv(os.path.join(CUR_PATH, 'match_0A_results.csv'), index=False)
+match_res.to_csv(os.path.join(CUR_PATH, 'match_2A_results.csv'), index=False)
 
 print('Matching complete')
 print('Length of PUF: ' + str(len(PUF)))

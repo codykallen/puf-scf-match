@@ -99,7 +99,7 @@ def Match(puf, scf):
     return match1
 
 # Call the Match function for each age group and save the matchings
-match_res = Match(PUF, SCF)
+match_res = Match(PUF, SCF).round(2)
 match_res.to_csv(os.path.join(CUR_PATH, 'match_1C_results.csv'), index=False)
 
 print('Matching complete')

@@ -107,7 +107,7 @@ match_res3 = Match(PUF[PUF['age_group'] == 3], SCF[SCF['age_group'] == 3])
 match_res4 = Match(PUF[PUF['age_group'] == 4], SCF[SCF['age_group'] == 4])
 match_res5 = Match(PUF[PUF['age_group'] == 5], SCF[SCF['age_group'] == 5])
 match_res = pd.concat([match_res0, match_res1, match_res2, match_res3,
-                       match_res4, match_res5], axis=0)
+                       match_res4, match_res5], axis=0).round(2)
 match_res.to_csv(os.path.join(CUR_PATH, 'match_1B_results.csv'), index=False)
 
 print('Matching complete')
