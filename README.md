@@ -24,6 +24,7 @@ The matching programs are enumerated by numbers and letters:
  - A: matching only on the comparable income measure
  - B: matching on comparable income nested within age groups
  - C: matching on comparable income and age
+ - D: matching on active income, passive income and age
 
 Future versions:
  - Matching by subcomponents of income

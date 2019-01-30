@@ -7,8 +7,11 @@ set maxvar 6000
 use "p16i6.dta", clear
 // Measure of comparable income
 gen compincome = X5702 + X5704 + X5714 + X5706 + X5708 + X5710 + 5716 + X5722
+// Active and passive income measures
+gen activeincome = X5702 + X5704 + X5714
+gen passiveincome = X5706 + X5708 + X5710 + X5716 + X5722
 // Save the results to add to main dataset
-keep Y1 compincome
+keep Y1 compincome activeincome passiveincome
 save "compincome.dta", replace
 
 /*
@@ -19,7 +22,7 @@ use "rscfp2016.dta", clear
 merge 1:1 Y1 using "compincome.dta"
 drop _merge
 
-keep Y1 compincome age wgt
+keep Y1 compincome activeincome passiveincome age wgt
 export delimited using "scf.csv", replace
 clear
 exit
