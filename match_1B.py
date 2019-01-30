@@ -44,7 +44,7 @@ SCF['age_group'] = group_age1
 # Get the PUF data aged to 2015
 recs = Records('puf.csv')
 pol = Policy()
-calc = Calculator(policy=pol, records=recs)
+calc = Calculator(policy=pol, records=recs, verbose=False)
 calc.advance_to_year(2015)
 calc.calc_all()
 recvars = ['e00200', 'e02100', 'e00900', 'e02000', 'e00400', 'e00300',
@@ -71,6 +71,8 @@ def Match(puf, scf):
     results. It returns a dataset of pairings of PUF and SCF records and the
     weight accorded to each.
     """
+    puf = puf.reset_index()
+    scf = scf.reset_index()
     incb = np.array(scf['compincome'])
     puf_list = list()
     scf_list = list()
@@ -108,3 +110,7 @@ match_res = pd.concat([match_res0, match_res1, match_res2, match_res3,
                        match_res4, match_res5], axis=0)
 match_res.to_csv(os.path.join(CUR_PATH, 'match_1B_results.csv'), index=False)
 
+print('Matching complete')
+print('Length of PUF: ' + str(len(PUF)))
+print('Length of SCF: ' + str(len(SCF)))
+print('Length of Match: ' + str(len(match_res)))

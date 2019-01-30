@@ -37,7 +37,7 @@ SCF = pd.read_csv(os.path.join(CUR_PATH, 'scf.csv'))
 # Get the PUF data aged to 2015
 recs = Records('puf.csv')
 pol = Policy()
-calc = Calculator(policy=pol, records=recs)
+calc = Calculator(policy=pol, records=recs, verbose=False)
 calc.advance_to_year(2015)
 calc.calc_all()
 recvars = ['e00200', 'e02100', 'e00900', 'e02000', 'e00400', 'e00300',
@@ -72,6 +72,9 @@ def Match(puf, scf):
     puf_list = list()
     scf_list = list()
     wt_list = list()
+    # Calculate distance
+    v_age = Variance(scf, 'age')
+    v_inc = Variance(scf, 'compincome')
     # Iterate over PUF observations
     for i in range(len(puf)):
         scf1 = copy.deepcopy(scf)
@@ -79,9 +82,6 @@ def Match(puf, scf):
         awt = puf.loc[i, 's006']
         inca = puf.loc[i, 'compincome']
         agea = puf.loc[i, 'age_head']
-        # Calculate distance
-        v_age = Variance(scf, 'age')
-        v_inc = Variance(scf, 'compincome')
         scf1['dist'] = np.sqrt((ageb - agea)**2 / v_age +
                                ((incb - inca)**2 / v_inc))
         # Grab matched observations
@@ -102,3 +102,7 @@ def Match(puf, scf):
 match_res = Match(PUF, SCF)
 match_res.to_csv(os.path.join(CUR_PATH, 'match_1C_results.csv'), index=False)
 
+print('Matching complete')
+print('Length of PUF: ' + str(len(PUF)))
+print('Length of SCF: ' + str(len(SCF)))
+print('Length of Match: ' + str(len(match_res)))

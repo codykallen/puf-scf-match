@@ -3,4 +3,10 @@ scf.csv
 compincome.dta
 p16i6.dta
 rscfp2016.dta
+match_0A_results.csv
+match_0B_results.csv
+match_1A_results.csv
+match_1B_results.csv
+match_1C_results.csv
+match_1D_results.csv
 __pycache__/
