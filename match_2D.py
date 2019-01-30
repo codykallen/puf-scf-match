@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 30 13:46:20 2019
+
+@author: cody_
+"""
+
 """
 This file conducts a matching between the PUF and the SCF using minimum
 distance. In the event of ties (which should be very common due to the multiple
@@ -19,6 +26,10 @@ relative to each observation in the PUF.
 
 The output of this program is a file containing pairings of units from the PUF
 and from the SCF.
+
+This program is nearly identical to match_1A.py. The distinction is that in the
+case of n SCF observations matched to a PUF observation, this
+randomly selects one to match instead of producing n matches.
 """
 import os
 import numpy as np
@@ -78,7 +89,6 @@ def Match(puf, scf):
     for i in range(len(puf)):
         scf1 = copy.deepcopy(scf)
         # Grab weight and income for PUF unit
-        awt = puf.loc[i, 's006']
         Ainca = puf.loc[i, 'activeincome']
         Pinca = puf.loc[i, 'passiveincome']
         agea = puf.loc[i, 'age_head']
@@ -86,14 +96,13 @@ def Match(puf, scf):
                                ((Aincb - Ainca)**2 / v_ainc) +
                                ((Pincb - Pinca)**2 / v_pinc))
         # Grab matched observations
-        scf_matched = scf1[scf1['dist'] == min(scf1['dist'])].reset_index()
-        mwgts = np.array(scf_matched['wgt'])
-        # Iterate over matched observations
-        for j in range(len(scf_matched)):
-            # Save each matching
-            puf_list.append(puf.loc[i, 'RECID'])
-            scf_list.append(scf_matched.loc[j, 'Y1'])
-            wt_list.append(awt * mwgts[j] / sum(mwgts))
+        scf_matched = scf1[scf1['dist'] == min(scf1['dist'])]
+        # Randomly select 1 SCF match
+        scf_matched2 = scf_matched.sample(n=1, weights='wgt').reset_index()
+        # Save each matching
+        puf_list.append(puf.loc[i, 'RECID'])
+        scf_list.append(scf_matched2.loc[0, 'Y1'])
+        wt_list.append(puf.loc[i, 's006'])
     # Save results to a DataFrame
     match1 = pd.DataFrame({'pufseq': puf_list, 'scf_seq': scf_list,
                            'wgt': wt_list})
@@ -101,7 +110,7 @@ def Match(puf, scf):
 
 # Call the Match function for each age group and save the matchings
 match_res = Match(PUF, SCF).round(2)
-match_res.to_csv(os.path.join(CUR_PATH, 'match_1D_results.csv'), index=False)
+match_res.to_csv(os.path.join(CUR_PATH, 'match_2D_results.csv'), index=False)
 
 print('Matching complete')
 print('Length of PUF: ' + str(len(PUF)))

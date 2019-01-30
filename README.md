@@ -20,7 +20,8 @@ matching version ignores this complication.
 To run this, first execute the code in `scf_prep.do`, and then run your preferred matching program.
 The matching programs are enumerated by numbers and letters:
  - 0: matching done by sorting on income
- - 1: matching done by minimum distance, unconstrained
+ - 1: matching done by minimum distance, unconstrained, with splitting on ties
+ - 2: matching done by minimum distance, unconstrained, with random tie-breaking
  - A: matching only on the comparable income measure
  - B: matching on comparable income nested within age groups
  - C: matching on comparable income and age
